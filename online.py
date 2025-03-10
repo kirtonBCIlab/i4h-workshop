@@ -17,6 +17,8 @@ UPDATE_INTERVAL_MS = 100  # plot and processing update interval
 PLOT_HISTORY_SEC = 10  # Display last 10 seconds
 WINDOW_SIZE_SEC = 2     # 2-second window
 
+THRESHOLD_ALPHA = 0.4
+
 # ----- Initialize LSL ----- #
 print("Looking for an EEG stream...")
 streams = resolve_streams()
@@ -71,6 +73,16 @@ p2.setLabel('left', 'Relative Power')
 p2.setLabel('bottom', 'Time', units='s')
 p2.setYRange(0, 1)
 p2.setXRange(-PLOT_HISTORY_SEC, 0)
+
+# Add threshold line to alpha power plot
+threshold_line = pg.InfiniteLine(pos=THRESHOLD_ALPHA, angle=0, pen=pg.mkPen('r', width=2, style=QtCore.Qt.DashLine))
+p2.addItem(threshold_line)
+
+# Status label: Eyes Open / Closed
+status_text = pg.TextItem(text='State: Unknown', anchor=(0, 1), color='w')
+p2.addItem(status_text)
+status_text.setPos(-PLOT_HISTORY_SEC + 0.5, 0.95)  # Position in the top-left corner
+
 
 alpha_curve = p2.plot()
 
@@ -136,6 +148,17 @@ def update():
 
     # Update Alpha Power plot
     alpha_curve.setData(np.array(power_time_buffer) - times[-1], alpha_power_history)
+
+    # Update Eyes Open / Closed status
+    if relative_alpha > THRESHOLD_ALPHA:
+        status = "Eyes CLOSED"
+        status_color = 'g'  # Green if closed
+    else:
+        status = "Eyes OPEN"
+        status_color = 'r'  # Red if open
+
+    status_text.setText(f'State: {status}', color=status_color)
+
 
 # ----- Timer for real-time updates ----- #
 timer = QtCore.QTimer()
