@@ -6,7 +6,7 @@ import pyqtgraph as pg
 from pyqtgraph.Qt import QtCore, QtWidgets
 
 # ----- Configurations ----- #
-SAMPLING_RATE = 300  # Hz
+SAMPLING_RATE = 250  # Hz
 WINDOW_SIZE_SEC = 2  # seconds
 PLOT_HISTORY_SEC = 10  # seconds
 CHANNEL_INDEX = 0  # first channel
@@ -54,7 +54,7 @@ win.resize(1000, 600)
 p1 = win.addPlot(title="EEG Signal (Single Channel)")
 p1.setLabel('left', 'Amplitude', units='uV')
 p1.setLabel('bottom', 'Time', units='s')
-p1.setYRange(-100, 100)
+p1.setYRange(-500, 500)
 p1.setXRange(-PLOT_HISTORY_SEC, 0)
 
 eeg_curve = p1.plot()
